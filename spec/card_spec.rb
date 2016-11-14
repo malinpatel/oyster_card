@@ -5,7 +5,7 @@ describe Card do
   subject(:card) { described_class.new }
 
 
-  context "#balance" do
+  context "#checking balance" do
 
     before(:each) do
       @amount = 90
@@ -32,4 +32,24 @@ describe Card do
 
   end
 
+  context "#spending money" do
+
+    before(:each) do
+      card.top_up(50)
+      @fare = 10
+    end
+
+      it "checks deducts can accept fare" do
+        expect(card).to respond_to(:deduct).with(1).argument
+      end
+
+      it "should deduct fare from current balance and return balance" do
+        expect(card.deduct(@fare)).to eq "New balance: £#{card.balance}."
+      end
+
+      it "should deduct fare from current balance" do
+        expect{card.deduct(@fare)}.to change{card.balance}.by -@fare
+      end
+
+  end
 end

@@ -10,9 +10,17 @@ class Card
   end
 
   def top_up(amount)
-    raise "Top up failed: maximum balance of £#{MAXIMUM_BALANCE} reached" if @balance + amount > MAXIMUM_BALANCE 
+    raise "Top up failed: maximum balance of £#{MAXIMUM_BALANCE} reached" if @balance + amount > MAXIMUM_BALANCE
     @balance += amount
     "Top up of £#{amount} successful. New balance: £#{@balance}"
   end
+
+  def deduct(fare)
+    raise "Insufficient funds: Please top up card." if @balance < fare
+    @balance -= fare
+    @balance
+    "New balance: £#{@balance}." 
+  end
+
 
 end
