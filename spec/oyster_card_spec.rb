@@ -13,7 +13,7 @@ describe Oystercard do
   end
 
   it "check oyster card can be topped up" do
-    expect(oyster_card).to respond_to (:top_up)
+    expect(oyster_card).to respond_to(:top_up).with(1).argument
   end
 
 end
