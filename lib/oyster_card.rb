@@ -18,4 +18,7 @@ class Oystercard
     amount > MAXIMUM_BALANCE
   end
 
+  def deduct
+  end
+
 end

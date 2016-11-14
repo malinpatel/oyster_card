@@ -31,4 +31,11 @@ describe Oystercard do
 
   end
 
+  describe "paying" do
+
+    it "oyster_card responds to deduct method" do
+      expect(oyster_card).to respond_to (:deduct)
+    end
+  end
+
 end
