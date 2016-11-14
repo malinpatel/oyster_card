@@ -8,4 +8,9 @@ class Card
     @balance = balance
   end
 
+  def top_up(amount)
+    @balance += amount 
+    "Top up successful"
+  end
+
 end
