@@ -32,12 +32,12 @@ describe Card do
 
   end
 
-  context "#spending money" do
+    context "#spending money" do
 
-    before(:each) do
-      card.top_up(50)
-      @fare = 10
-    end
+      before(:each) do
+        card.top_up(50)
+        @fare = 10
+      end
 
       it "checks deducts can accept fare" do
         expect(card).to respond_to(:deduct).with(1).argument
@@ -50,6 +50,52 @@ describe Card do
       it "should deduct fare from current balance" do
         expect{card.deduct(@fare)}.to change{card.balance}.by -@fare
       end
+    end
 
-  end
+
+    context "#touching in when card not in journey" do
+      before(:each) do
+        card.stub(:in_journey?).and_return(false)
+      end
+
+      it "checks card can be touched in" do
+        expect(card.touch_in).to eq true
+      end
+    end
+
+      context "#touching in when card is in journey" do
+      before(:each) do
+        card.stub(:in_journey?).and_return(true)
+      end
+
+      it "checks a card can only be touched in once" do
+        expect{card.touch_in}.to raise_error "Error: Card already touched in"
+      end
+    end
+
+
+    context "#touching out" do
+
+      it "checks card can be touched out" do
+        card.stub(:in_journey?).and_return(true)
+        expect(card.touch_out).to eq false
+      end
+
+      it "checks a card cannot be touched out if card is not in journey" do
+        card.stub(:in_journey?).and_return(false)
+        expect{card.touch_out}.to raise_error "Error: Card has not been touched in"
+      end
+    end
+
+    context "#in_journey?" do
+
+      it 'checks card is not in journey it not touched in' do
+        expect(card.in_journey?).to eq false
+      end
+
+      it "checks if card has been touched in" do
+        card.touch_in
+        expect(card.in_journey?).to eq true
+      end
+    end
 end
