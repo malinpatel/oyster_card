@@ -44,28 +44,46 @@ describe Oystercard do
 
   end
 
-  describe "touching in" do
-    it 'checks if a card can be touched in' do
-      expect(oyster_card.touch_in).to eq true
-    end
-  end
-
   describe "touching out" do
     it 'checks if a card can be touched out' do
       expect(oyster_card.touch_out).to eq false
     end
   end
 
-  describe "in journey?" do
-    it 'checks if a card is in journey' do
-      oyster_card.touch_out
-      expect(oyster_card.in_journey?).to eq false
+  context "sufficient funds on the card" do
+    before do
+      oyster_card.top_up(Oystercard::MAXIMUM_BALANCE)
     end
 
-    it 'checks card is in journey when touched in' do
-      oyster_card.touch_in
-      expect(oyster_card.in_journey?).to eq true
+    describe "touching in" do
+      it 'checks if a card can be touched in' do
+        expect(oyster_card.touch_in).to eq true
+      end
     end
 
+    describe "in journey?" do
+      it 'checks if a card is in journey' do
+        oyster_card.touch_out
+        expect(oyster_card.in_journey?).to eq false
+      end
+
+      it 'checks card is in journey when touched in' do
+        oyster_card.touch_in
+        expect(oyster_card.in_journey?).to eq true
+      end
+
+    end
+
+  end
+
+
+
+  describe "minimum touch in balance" do
+
+    it "should raise error if balance is below minimum balance" do
+      minimum_fare = Oystercard::MINIMUM_FARE - 1
+      oyster_card.top_up(minimum_fare)
+      expect{oyster_card.touch_in}.to raise_error "Sorry you have insufficient funds"
+    end
   end
 end
