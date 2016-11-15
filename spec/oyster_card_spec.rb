@@ -6,54 +6,41 @@ describe Oystercard do
 
   describe "Topping up" do
 
-    it "check oyster card can be topped up" do
-      expect(oyster_card).to respond_to(:top_up).with(1).argument
-    end
+      it "check oyster card can be topped up" do
+        expect(oyster_card).to respond_to(:top_up).with(1).argument
+      end
 
-    it "topping up increases the balance of the oyster card" do
-      oyster_card.top_up(10)
-      expect(oyster_card.balance).to eq 10
-    end
-
+      it "topping up increases the balance of the oyster card" do
+        oyster_card.top_up(10)
+        expect(oyster_card.balance).to eq 10
+      end
 
       it "topping up raises an error if balance exceeds maximum balance" do
         max_balance = Oystercard::MAXIMUM_BALANCE
         expect {oyster_card.top_up(max_balance+1)}.to raise_error ("You have exceeded the maximum balance of #{max_balance}")
       end
-
-  end
+    end
 
   describe "Balance" do
+      it "oyster card has an initial balance of zero" do
+        expect(oyster_card.balance).to eq 0
+      end
 
-    it "oyster card has an initial balance of zero" do
-      expect(oyster_card.balance).to eq 0
-    end
-
-  end
-
-  describe "paying" do
-
-    it "oyster_card responds to deduct method" do
-      expect(oyster_card).to respond_to (:deduct)
-    end
-
-    it "oyster_card deducts an amount from balance" do
-      oyster_card.top_up(20)
-      expect(oyster_card.deduct(10)).to eq 10
-    end
-
+      it "deducts minimum fare from balance" do
+        minimum_fare = Oystercard::MINIMUM_FARE
+        expect {oyster_card.touch_out}.to change{oyster_card.balance}.by(-minimum_fare)
+      end
   end
 
   describe "touching out" do
-    it 'checks if a card can be touched out' do
-      expect(oyster_card.touch_out).to eq false
-    end
-  end
+      it 'checks if a card can be touched out' do
+        expect(oyster_card.touch_out).to eq false
+      end
 
-  context "sufficient funds on the card" do
-    before do
-      oyster_card.top_up(Oystercard::MAXIMUM_BALANCE)
-    end
+      context "sufficient funds on the card" do
+        before do
+          oyster_card.top_up(Oystercard::MAXIMUM_BALANCE)
+        end
 
     describe "touching in" do
       it 'checks if a card can be touched in' do
@@ -71,12 +58,9 @@ describe Oystercard do
         oyster_card.touch_in
         expect(oyster_card.in_journey?).to eq true
       end
-
     end
-
   end
-
-
+end
 
   describe "minimum touch in balance" do
 
