@@ -3,6 +3,7 @@ require 'oyster_card'
 describe Oystercard do
 
   subject(:oyster_card) {described_class.new}
+  let(:station) {double :station}
 
   describe "Topping up" do
 
@@ -32,19 +33,28 @@ describe Oystercard do
       end
   end
 
-  describe "touching out" do
-      it 'checks if a card can be touched out' do
-        expect(oyster_card.touch_out).to eq false
-      end
-
       context "sufficient funds on the card" do
         before do
           oyster_card.top_up(Oystercard::MAXIMUM_BALANCE)
         end
 
+    describe "touching out" do
+
+        it "forgets entry station when you touch out" do
+          oyster_card.touch_in(station)
+          oyster_card.touch_out
+          expect(oyster_card.entry_station).to be nil
+
+        end
+
+    end
+
+
     describe "touching in" do
-      it 'checks if a card can be touched in' do
-        expect(oyster_card.touch_in).to eq true
+
+      it "changes the entry station to the name of the entered station " do
+        oyster_card.touch_in(station)
+        expect(oyster_card.entry_station).to eq station
       end
     end
 
@@ -55,11 +65,11 @@ describe Oystercard do
       end
 
       it 'checks card is in journey when touched in' do
-        oyster_card.touch_in
+        oyster_card.touch_in(station)
         expect(oyster_card.in_journey?).to eq true
       end
     end
-  end
+
 end
 
   describe "minimum touch in balance" do
@@ -67,7 +77,7 @@ end
     it "should raise error if balance is below minimum balance" do
       minimum_fare = Oystercard::MINIMUM_FARE - 1
       oyster_card.top_up(minimum_fare)
-      expect{oyster_card.touch_in}.to raise_error "Sorry you have insufficient funds"
+      expect{oyster_card.touch_in(station)}.to raise_error "Sorry you have insufficient funds"
     end
   end
 end
