@@ -4,6 +4,7 @@ describe Oystercard do
 
   subject(:oyster_card) {described_class.new}
   let(:station) {double :station}
+  let(:exit_station) {double :exit_station}
 
   describe "Topping up" do
 
@@ -29,7 +30,7 @@ describe Oystercard do
 
       it "deducts minimum fare from balance" do
         minimum_fare = Oystercard::MINIMUM_FARE
-        expect {oyster_card.touch_out}.to change{oyster_card.balance}.by(-minimum_fare)
+        expect {oyster_card.touch_out(station)}.to change{oyster_card.balance}.by(-minimum_fare)
       end
   end
 
@@ -42,9 +43,18 @@ describe Oystercard do
 
         it "forgets entry station when you touch out" do
           oyster_card.touch_in(station)
-          oyster_card.touch_out
+          oyster_card.touch_out(exit_station)
           expect(oyster_card.entry_station).to be nil
+        end
 
+        describe "specifies station when touching out" do
+          it 'checks touching out takes an argument' do
+            expect(oyster_card).to respond_to(:touch_out).with(1).argument
+          end
+
+          it 'checks the exit station is stored to the card' do
+            expect(oyster_card.touch_out(exit_station)).to eq exit_station
+          end
         end
 
     end
@@ -60,7 +70,7 @@ describe Oystercard do
 
     describe "in journey?" do
       it 'checks if a card is in journey' do
-        oyster_card.touch_out
+        oyster_card.touch_out(exit_station)
         expect(oyster_card.in_journey?).to eq false
       end
 
@@ -80,4 +90,15 @@ end
       expect{oyster_card.touch_in(station)}.to raise_error "Sorry you have insufficient funds"
     end
   end
+
+  describe 'Journey history' do
+
+    it 'checks touching in and touching out creates one journey' do
+      oyster_card.top_up(90)
+      oyster_card.touch_in(station)
+      oyster_card.touch_out(exit_station)
+      expect(oyster_card.journey_history).to include({:entry_station => station, :exit_station => exit_station })
+    end
+  end
+
 end
