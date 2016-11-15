@@ -30,4 +30,20 @@ describe OysterCard do
     end
   end
 
+  context "journey" do
+    it { is_expected.to respond_to(:touch_in) }
+    it { is_expected.to respond_to(:touch_out) }
+    it { is_expected.to respond_to(:in_journey?)}
+    it "changes in_use to true when touched in" do
+      oystercard.touch_in
+      expect(oystercard.in_journey?).to eq true
+    end
+
+    it "changes in_use to false when touched out" do
+      oystercard.touch_in
+      oystercard.touch_out
+      expect(oystercard.in_journey?).to eq false
+    end
+  end
+
 end
