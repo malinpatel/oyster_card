@@ -1,13 +1,7 @@
-describe Oystercard do
+require 'oystercard'
 
-#type of error:
-#`<top (required)>': uninitialized constant Oystercard (NameError)
-#file path:
-#spec/oystercard_spec.rb
-#line number:
-#1
-#reason for the error:
-#Oystercard class has not been defined yet
-#solution:
-#define Oystercard class
+describe OysterCard do
+  subject(:oystercard) {described_class.new}
+
+  it { is_expected.to respond_to(:balance) }
 end
