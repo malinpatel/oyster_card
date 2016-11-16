@@ -30,22 +30,11 @@ describe OysterCard do
       it { is_expected.to respond_to(:touch_in) }
       it { is_expected.to respond_to(:touch_out) }
       it { is_expected.to respond_to(:in_journey?)}
-      it 'deducts minimum fare when touched in' do
-        entry_station = "King's cross"
-        oystercard.touch_in(entry_station)
-        expect{oystercard.touch_out}.to change{oystercard.balance}.by(-1)
+      it 'deducts minimum fare when touched out' do
+        station = "King's cross"
+        oystercard.touch_in(station)
+        expect{oystercard.touch_out(station)}.to change{oystercard.balance}.by(-1)
       end
-
-      it "clears entry station once touched out" do
-        oystercard.touch_out
-        expect(oystercard.entry_station).to eq nil
-      end
-
-    end
-    it 'remembers the entry station after touch in' do
-      oystercard.top_up(10)
-      oystercard.touch_in(station)
-      expect(oystercard.entry_station).to eq [station]
     end
   end
 
@@ -63,6 +52,15 @@ describe OysterCard do
 
   end
 
+describe "#touching out" do
+  it "stores the exit station" do
+    oystercard.top_up(90)
+    oystercard.touch_in("Kings Cross")
+    oystercard.touch_out("Euston")
+    journey = {"Kings Cross" => "Euston"}
+    expect(oystercard.journey_log).to include journey
+  end
+end
 
 
 end
