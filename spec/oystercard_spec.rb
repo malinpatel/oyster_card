@@ -30,6 +30,10 @@ describe OysterCard do
         expect(oystercard.in_journey?).to eq true
       end
 
+      it 'deducts minimum fare when touched in' do
+        expect{oystercard.touch_in}.to change{oystercard.balance}.by(-1)
+      end
+
       it "changes in_use to false when touched out" do
         oystercard.touch_in
         oystercard.touch_out
@@ -45,20 +49,11 @@ describe OysterCard do
       expect(oystercard.balance).to eq 10
     end
 
-    it "should raise an error if max. limit is exceeeded" do
-      message = "Cannot top up: £#{OysterCard::MAXIMUM_LIMIT} limit would be exceeded"
-      expect {oystercard.top_up(100)}.to raise_error(message)
-    end
-  end
-
-  describe "#deduct" do
-    it { is_expected.to respond_to(:deduct).with(1).argument }
-
-    it "should allow to have value deducted" do
-      oystercard.top_up(10)
-      oystercard.deduct(2)
-      expect(oystercard.balance).to eq 8
-    end
+      it "should raise an error if max. limit is exceeeded" do
+        message = "Cannot top up: £#{OysterCard::MAXIMUM_LIMIT} limit would be exceeded"
+        expect {oystercard.top_up(100)}.to raise_error(message)
+      end
+    
   end
 
 

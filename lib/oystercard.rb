@@ -12,13 +12,12 @@ class OysterCard
     raise "Cannot top up: £#{MAXIMUM_LIMIT} limit would be exceeded" if balance + value > MAXIMUM_LIMIT
     self.balance += value
   end
- 
-  def deduct(value)
-    self.balance -= value
-  end
+
+
 
   def touch_in
     raise "Insufficient funds. You need to top up." if insufficient_funds?
+    deduct MINIMUM_FARE
     @in_use = true
   end
 
@@ -33,6 +32,10 @@ class OysterCard
   private
   def insufficient_funds?
     balance < MINIMUM_FARE
+  end
+
+  def deduct(value)
+    self.balance -= value
   end
 
 end
