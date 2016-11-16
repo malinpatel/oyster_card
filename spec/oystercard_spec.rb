@@ -2,6 +2,8 @@ require 'oystercard'
 
 describe OysterCard do
   subject(:oystercard) {described_class.new}
+  let(:station) {double :station}
+
 
   context "balance" do
     it { is_expected.to respond_to(:balance) }
@@ -12,7 +14,8 @@ describe OysterCard do
       oystercard.top_up(0.9)
     end
     it "should raise an error if the balance is less than 1" do
-      expect{ oystercard.touch_in }.to raise_error("Insufficient funds. You need to top up.")
+      entry_station = "King's cross"
+      expect{ oystercard.touch_in(entry_station) }.to raise_error("Insufficient funds. You need to top up.")
     end
 
   end
@@ -21,24 +24,28 @@ describe OysterCard do
     context "sufficient funds" do
       before do
         oystercard.top_up(10)
+        entry_station = "King's cross"
+        oystercard.touch_in(entry_station)
       end
       it { is_expected.to respond_to(:touch_in) }
       it { is_expected.to respond_to(:touch_out) }
       it { is_expected.to respond_to(:in_journey?)}
-      it "changes in_use to true when touched in" do
-        oystercard.touch_in
-        expect(oystercard.in_journey?).to eq true
-      end
-
       it 'deducts minimum fare when touched in' do
-        expect{oystercard.touch_in}.to change{oystercard.balance}.by(-1)
+        entry_station = "King's cross"
+        oystercard.touch_in(entry_station)
+        expect{oystercard.touch_out}.to change{oystercard.balance}.by(-1)
       end
 
-      it "changes in_use to false when touched out" do
-        oystercard.touch_in
+      it "clears entry station once touched out" do
         oystercard.touch_out
-        expect(oystercard.in_journey?).to eq false
+        expect(oystercard.entry_station).to eq nil
       end
+
+    end
+    it 'remembers the entry station after touch in' do
+      oystercard.top_up(10)
+      oystercard.touch_in(station)
+      expect(oystercard.entry_station).to eq [station]
     end
   end
 
@@ -53,7 +60,7 @@ describe OysterCard do
         message = "Cannot top up: £#{OysterCard::MAXIMUM_LIMIT} limit would be exceeded"
         expect {oystercard.top_up(100)}.to raise_error(message)
       end
-    
+
   end
 
 
