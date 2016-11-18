@@ -1,4 +1,5 @@
 require_relative 'journey'
+require_relative 'journeylog'
 
 class Oystercard
 
@@ -9,8 +10,7 @@ class Oystercard
 
   def initialize(journey_klass)
     @balance = 0
-    @journey = journey_klass.new
-    @journeys = []
+    @journey_log = journey_klass.new(Journey)
   end
 
   def top_up(amount)
@@ -31,7 +31,7 @@ class Oystercard
 
   def touch_in(station)
     fail "Pauper" if below_minimum_balance?
-    @journey.begin(station)
+    @journey_log.start(station)
   end
 
   def makes_card_full?(amount)
