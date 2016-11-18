@@ -3,13 +3,14 @@ require_relative 'journeylog'
 
 class Oystercard
 
-  attr_reader :balance, :journey, :journeys
+  attr_reader :balance, :journey_log, :entry_station
 
   MAXIMUM_BALANCE = 90
   MINIMUM_BALANCE = 1
 
   def initialize(journey_klass)
     @balance = 0
+    @entry_station = nil
     @journey_log = journey_klass.new(Journey)
   end
 
@@ -19,19 +20,22 @@ class Oystercard
   end
 
   def in_journey?
-    @journey.in_journey?
+    @entry_station != nil
   end
 
   def touch_out(station)
-    @journey.terminate(station)
-    deduct(@journey.fare)
-    add_journey_to_journeys_list
-    @journey = Journey.new
+    @journey_log.finish(station)
+    deduct(@journey_log.journeys.last.fare)
+    @entry_station == nil
+
   end
 
-  def touch_in(station)
+  def touch_in(entry_station)
     fail "Pauper" if below_minimum_balance?
-    @journey_log.start(station)
+    check_previous_journey
+    create_journey(entry_station)
+    @entry_station  = entry_station
+
   end
 
   def makes_card_full?(amount)
@@ -42,14 +46,21 @@ class Oystercard
     @balance < MINIMUM_BALANCE
   end
 
-  def add_journey_to_journeys_list
-    @journeys << @journey.current_journey
-  end
 
   private
 
     def deduct(fare)
       @balance -= fare
+    end
+
+    def check_previous_journey
+      if journey_log.journeys.any? && journey_log.last.incomplete?
+        deduct(journey_log.journeys.last.fare)
+      end
+    end
+
+    def create_journey(entry_station)
+      journey_log.start(entry_station)
     end
 
 end

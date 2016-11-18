@@ -9,22 +9,21 @@ class JourneyLog
     @journeys = []
   end
 
-  def start(entry_station)
-    current_journey(entry_station)
+  def start(station)
+    journey_new = journey_class.new
+    journey_new.begin(station)
+    @journeys << journey_new
+
   end
 
-  def finish(exit_station)
-    @journeys << @journey.current_journey
+  def finish(station2)
+    @journeys.last.terminate(station2)
   end
 
-  private
+  def journeys
+    @journeys.dup
+  end
 
-    def current_journey(entry_station)
-      @journey = @journey_class.new if incomplete_journey?
-    end
 
-    def incomplete_journey?
-      @journeys[-1][:origin] == nil || @journeys[-1][:destination] == nil
-    end
 
 end

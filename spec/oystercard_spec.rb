@@ -2,7 +2,7 @@ require "oystercard"
 
 describe Oystercard do
 
-  subject(:travelcard) {described_class.new(Journey)}
+  subject(:travelcard) {deexiscribed_class.new(Journey)}
   subject(:empty_travelcard) {described_class.new(Journey)}
 
   let(:entry_station) {double :entry_station }
